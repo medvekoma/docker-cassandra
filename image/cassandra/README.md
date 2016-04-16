@@ -17,5 +17,6 @@ CREATE TABLE nobel_laureates
   PRIMARY KEY (year, laureateid)
 );
 
-COPY nobel_laureates (year, category, laureateid, firstname, surname, borncountrycode, borncity) FROM 'nobel-laureates.csv';
+COPY nobel_laureates (year, category, laureateid, firstname, surname, borncountrycode, borncity) 
+FROM 'nobel-laureates.csv';
 ```
