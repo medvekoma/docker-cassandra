@@ -1,17 +1,23 @@
-c1:
-  image: medvekoma/cassandra
-  ports:
-    - "9042:9042"
-    - "9160:9160"
-c2:
-  image: medvekoma/cassandra
-  links:
-    - c1:seed
-  environment:
-    CASSANDRA_SEEDS: seed
-c3:
-  image: medvekoma/cassandra
-  links:
-    - c1:seed
-  environment:
-    CASSANDRA_SEEDS: seed
+version: '2'
+services:
+  c1:
+    image: medvekoma/cassandra
+    ports:
+      - "9042:9042"
+      - "9160:9160"
+    restart: unless-stopped
+  c2:
+    image: medvekoma/cassandra
+    links:
+      - c1:seed1
+    environment:
+      CASSANDRA_SEEDS: seed1
+    restart: unless-stopped
+  c3:
+    image: medvekoma/cassandra
+    links:
+      - c1:seed1
+      - c2:seed2
+    environment:
+      CASSANDRA_SEEDS: seed1,seed2
+    restart: unless-stopped
