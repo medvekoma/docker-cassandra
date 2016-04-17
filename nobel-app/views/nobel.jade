@@ -1,0 +1,7 @@
+extends layout
+
+block content
+  h1= title
+  ul
+    each row, index in rows
+        li= index + ". " + row.category + ": " + row.firstname + " " + row.surname
