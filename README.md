@@ -19,7 +19,7 @@ docker run --name node3 -d --link node1:cassandra cassandra
 ```
 
 ## Create your own Cassandra image
-Visit http://github.com/medvekoma/docker-cassandra/image
+Visit https://github.com/medvekoma/docker-cassandra/tree/master/image
 
 ## Use docker-compose
-Visit http://github.com/medvekoma/docker-cassandra/compose
+Visit https://github.com/medvekoma/docker-cassandra/tree/master/compose
