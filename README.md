@@ -2,9 +2,9 @@
 
 Step-by-step guide to run a Cassandra cluster on Docker in minutes.
 
-## 1. Use the official image
+## Use the official image
 
-```bash
+```Shell
 ## start the first node
 docker run --name node1 -d cassandra
 
@@ -18,6 +18,8 @@ docker exec -it node1 nodetool status
 docker run --name node3 -d --link node1:cassandra cassandra
 ```
 
-## 1. Create your own Cassandra image
+## Create your own Cassandra image
+Visit http://github.com/medvekoma/docker-cassandra/image
 
-## 1. Use docker-compose
+## Use docker-compose
+Visit http://github.com/medvekoma/docker-cassandra/compose
