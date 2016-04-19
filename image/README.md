@@ -2,7 +2,14 @@
 
 Adds an example dataset and some tooling to the official Cassandra image
 
-## Create table
+## Create image
+
+```bash
+docker build -t medvekoma/cassandra-demo .
+docker push medvekoma/cassandra-demo
+```
+
+## Example CQL scripts
 
 ```SQL
 CREATE TABLE nobel_laureates 
@@ -18,5 +25,5 @@ CREATE TABLE nobel_laureates
 );
 
 COPY nobel_laureates (year, category, laureateid, firstname, surname, borncountrycode, borncity) 
-FROM 'nobel-laureates.csv';
+FROM '/demo/nobel-laureates.csv';
 ```
