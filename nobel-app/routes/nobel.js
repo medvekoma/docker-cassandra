@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const cassandra = require('cassandra-driver')
-const client = new cassandra.Client({ contactPoints: ['192.168.99.100'], keyspace: 'ks1'});
+const client = new cassandra.Client({ contactPoints: ['seed1'], keyspace: 'ks1'});
 
 function renderResult(res, err, title, result){
   if (err) {
