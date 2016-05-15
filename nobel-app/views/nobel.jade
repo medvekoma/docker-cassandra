@@ -2,6 +2,13 @@ extends layout
 
 block content
   h1= title
-  ul
+  table
+    tr
+      td Nr.
+      td Category
+      td Name
     each row, index in rows
-        li= index + ". " + row.category + ": " + row.firstname + " " + row.surname
+      tr
+        td= index + 1
+        td= row.category
+        td= row.firstname + " " + row.surname
