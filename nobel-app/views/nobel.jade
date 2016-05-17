@@ -6,9 +6,11 @@ block content
     tr
       td Nr.
       td Category
+      td Year
       td Name
     each row, index in rows
       tr
         td= index + 1
         td= row.category
+        td= row.year
         td= row.firstname + " " + row.surname

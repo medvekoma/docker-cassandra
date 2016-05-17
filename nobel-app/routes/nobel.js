@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 const cassandra = require('cassandra-driver')
-const client = new cassandra.Client({ contactPoints: ['node1'], keyspace: 'meetup'});
+const client = new cassandra.Client({ contactPoints: ['node1'], keyspace: 'nobel'});
 
 /* GET by year. */
 router.get('/year/:year', function(req, res, next) {
@@ -10,7 +10,7 @@ router.get('/year/:year', function(req, res, next) {
   console.log("Year: " + year)
   const cql = 'SELECT * FROM nobel_laureates WHERE year=?';
   client.execute(cql, [year], {prepare: true}, function(err, result) {
-    renderResult(res, err, 'Laureates in ' + year, result)
+    renderResult(res, err, 'Laureates in ' + year, result, row => row.category)
   });
 });
 
@@ -20,17 +20,32 @@ router.get('/country/:code', function(req, res, next) {
   console.log("Country code: " + code)
   const cql = 'SELECT * FROM nobel_laureates WHERE borncountrycode=?';
   client.execute(cql, [code], {prepare: true}, function(err, result) {
-    renderResult(res, err, 'Laureates from ' + code, result)
+    renderResult(res, err, 'Laureates from ' + code, result, row => row.year)
   });
 });
 
-function renderResult(res, err, title, result){
+function renderResult(res, err, title, result, selector){
   if (err) {
     console.log(">>> Error: " + err)
     res.render('index', {title: 'Error!'})
   } else {
-    res.render('nobel', { title: title, rows: result.rows });
+    var rows = result.rows.sort(compareBy(selector));
+    res.render('nobel', { title: title, rows: rows });
   }
+}
+
+function compareBy(selector) {
+  var comparer = function(one, two){
+    var a = selector(one)
+    var b = selector(two)
+    if (a < b)
+      return -1;
+    else if (a > b)
+      return 1;
+    else
+      return 0;
+  }
+  return comparer;
 }
 
 module.exports = router;
