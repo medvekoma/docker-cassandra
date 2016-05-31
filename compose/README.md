@@ -1,3 +1,5 @@
+# Create a Cassandra cluster with docker-compose
+
 This folder describes how to use docker-compose for running a Cassandra cluster.
 
 ## Starting a cluster
@@ -13,4 +15,3 @@ docker logs
 docker ps -a
 docker exec -it compose_node1_1 nodetool status
 ```
-  
