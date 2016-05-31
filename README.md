@@ -6,6 +6,7 @@ This is a step-by-step guide for running a Cassandra cluster with Docker.
 The goal is to have an automated way for creating, customizing, destroying and recreating a Cassandra cluster, so that we can experiment with adding/removing nodes, changing consistency levels, etc.
 
 ![cluster](presentation/cluster.png)
+
 In order to achieve this goal, normally we would need to:
 * provision 3 Linux machines
 * install Cassandra on each
@@ -147,10 +148,42 @@ docker push medvekoma/cassandra-demo
 
 ## Demo #3 - Docker Compose
 Even though creating and linking the cluster nodes was simple, this is still a manual process. If we want to automate the orchestration of more docker containers, docker-compose becomes handy:
+
 ```bash
 cd compose
 ## view definition file
 vim docker-compose.yml
+```
+```yml
+version: '2'
+services:
+
+  node1:
+    image: medvekoma/cassandra-demo
+    ports:
+      - "9042:9042"
+      - "9160:9160"
+    environment:
+      CASSANDRA_CLUSTER_NAME: demo
+      CASSANDRA_SEEDS: node1,node2,node3
+    restart: unless-stopped
+
+  node2:
+    image: medvekoma/cassandra-demo
+    environment:
+      CASSANDRA_CLUSTER_NAME: demo
+      CASSANDRA_SEEDS: node1,node2,node3
+    restart: unless-stopped
+
+  node3:
+    image: medvekoma/cassandra-demo
+    environment:
+      CASSANDRA_CLUSTER_NAME: demo
+      CASSANDRA_SEEDS: node1,node2,node3
+    restart: unless-stopped
+```
+
+```bash
 ## create cluster
 docker-console up -d
 ## test cluster formation
@@ -220,4 +253,63 @@ How about now?
 -- Is it operational?
 SELECT * FROM nobel_laureates WHERE year = 2002;
 SELECT * FROM nobel_laureates WHERE year = 2001;
+```
+## Cassandra Demo #2 - Write Path
+This demo explains the steps taken by Cassandra when storing information on a single node.
+![write path](presentation/write-path.png)
+
+### Create test table
+```sql
+CREATE KEYSPACE demo WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+USE demo;
+CREATE TABLE meetup
+(
+  id int PRIMARY KEY,
+  presenter text,
+  topic text,
+  date timestamp
+);
+INSERT INTO meetup (id, presenter, topic) VALUES ( 1, 'Ada Lovelace', 'Storing the Internet on a Raspberry Pi');
+SELECT * FROM meetup;
+```
+### Check the data files on the node (sstable)
+```bash
+# check which node holds the data
+docker exec -it compose_node1_1 nodetool getendpoints demo meetup 1
+# check the name of the node which holds the data
+docker exec -it compose_node1_1 bash
+ping node1
+ping node2
+ping node3
+# go to that machine
+docker exec -it compose_node2_1 bash
+# folder for the sstables
+cd /var/lib/cassandra/data/demo/meetup-<GUID>/
+ls -la
+# no data files yet
+# flush the memtable to disk
+nodetool flush
+# check the content of the sstable
+java -jar /demo/sstable-tools.jar toJson ma-1-big-Data.db
+# enter CQL shell to modify the data
+cqlsh
+```
+```sql
+USE demo;
+UPDATE meetup SET date = '2016-06-16' WHERE id = 1;
+SELECT * FROM meetup;
+```
+```bash
+ls -la
+java -jar /demo/sstable-tools.jar toJson ma-1-big-Data.db
+# no new data files - new data is still in memory
+# flush data to disk
+nodetool flush
+ls -la
+java -jar /demo/sstable-tools.jar toJson ma-1-big-Data.db
+java -jar /demo/sstable-tools.jar toJson ma-2-big-Data.db
+# compact data files
+nodetool compact
+ls -la
+java -jar /demo/sstable-tools.jar toJson ma-3-big-Data.db
 ```
