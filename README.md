@@ -274,42 +274,55 @@ SELECT * FROM meetup;
 ```
 ### Check the data files on the node (sstable)
 ```bash
+# list the ip addresses of the nodes
+for i in {1..3}; do docker exec -it compose_node${i}_1 hostname -I; done
+
 # check which node holds the data
 docker exec -it compose_node1_1 nodetool getendpoints demo meetup 1
-# check the name of the node which holds the data
-docker exec -it compose_node1_1 bash
-ping node1
-ping node2
-ping node3
+
 # go to that machine
 docker exec -it compose_node2_1 bash
+
 # folder for the sstables
 cd /var/lib/cassandra/data/demo/meetup-<GUID>/
 ls -la
 # no data files yet
+
 # flush the memtable to disk
 nodetool flush
+
 # check the content of the sstable
 java -jar /demo/sstable-tools.jar toJson ma-1-big-Data.db
+```
+
+```sql
 # enter CQL shell to modify the data
 cqlsh
+-- update some columns
+UPDATE demo.meetup
+SET date = '2016-06-16', presenter = 'Charles Babbage'
+WHERE id = 1;
+-- verify results
+SELECT * FROM demo.meetup;
 ```
-```sql
-USE demo;
-UPDATE meetup SET date = '2016-06-16' WHERE id = 1;
-SELECT * FROM meetup;
-```
+
 ```bash
 ls -la
 java -jar /demo/sstable-tools.jar toJson ma-1-big-Data.db
 # no new data files - new data is still in memory
+
 # flush data to disk
 nodetool flush
+
+# check sstable content again
 ls -la
 java -jar /demo/sstable-tools.jar toJson ma-1-big-Data.db
 java -jar /demo/sstable-tools.jar toJson ma-2-big-Data.db
+
 # compact data files
 nodetool compact
+
+# check sstable content again
 ls -la
 java -jar /demo/sstable-tools.jar toJson ma-3-big-Data.db
 ```
