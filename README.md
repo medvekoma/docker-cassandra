@@ -185,7 +185,7 @@ services:
 
 ```bash
 ## create cluster
-docker-console up -d
+docker-compose up -d
 ## test cluster formation
 docker exec -it compose_node1_1 nodetool status
 ## scale up
