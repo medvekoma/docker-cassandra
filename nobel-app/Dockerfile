@@ -1,4 +1,4 @@
-FROM node:argon
+FROM node:9.2.0-alpine
 
 # Create app directory
 RUN mkdir -p /usr/src/app
@@ -11,5 +11,5 @@ RUN npm install
 # Bundle app source
 COPY . /usr/src/app
 
-EXPOSE 8080
+EXPOSE 3000
 CMD [ "npm", "start" ]
