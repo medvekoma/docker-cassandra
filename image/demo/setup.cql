@@ -5,7 +5,7 @@ CREATE KEYSPACE nobel WITH replication = {'class': 'SimpleStrategy', 'replicatio
 USE nobel;
 
 -- Field year is partition key, laureateid is clustering key
-CREATE TABLE nobel_laureates 
+CREATE TABLE laureates
 (
   year int, 
   category text, 
@@ -18,9 +18,9 @@ CREATE TABLE nobel_laureates
 );
 
 -- Cassandra can only query by key or by indexed field
-CREATE INDEX ON nobel_laureates (borncountrycode);
+CREATE INDEX ON laureates (borncountrycode);
 
 -- Populate table from a csv file
-COPY nobel_laureates (year, category, laureateid, firstname, surname, borncountrycode, borncity) 
+COPY laureates (year, category, laureateid, firstname, surname, borncountrycode, borncity) 
 FROM '/demo/nobel-laureates.csv';
 

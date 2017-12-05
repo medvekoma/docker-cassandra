@@ -63,6 +63,7 @@ Status=Up/Down
 --  Address     Load       Tokens       Owns    Host ID                               Rack
 UN  172.20.0.2  105 KB     256          ?       21f00824-b223-455d-99e3-98420d9efa73  rack1
 ```
+
 The first two characters of each line specify the Status and the current state of the node:
 - [U]p or [D]own
 - [N]ormal, [L]eaving, [J]oining or [L]eaving
@@ -217,13 +218,13 @@ vim /demo/setup.cqlsh
 ### Test database
 ```sql
 USE nobel;
-SELECT * FROM nobel_laureates WHERE year = 2002;
-SELECT * FROM nobel_laureates WHERE borncountrycode = 'HU';
+SELECT * FROM laureates WHERE year = 2002;
+SELECT * FROM laureates WHERE borncountrycode = 'HU';
 ```
 ```bash
 # check which nodes hold the data
-nodetool getendpoints nobel nobel_laureates 1986
-nodetool getendpoints nobel nobel_laureates 1987
+nodetool getendpoints nobel laureates 1986
+nodetool getendpoints nobel laureates 1987
 ...
 ```
 
@@ -234,8 +235,8 @@ docker stop compose_node2_1
 ```
 ```sql
 -- Is it still operational?
-SELECT * FROM nobel_laureates WHERE year = 2002;
-SELECT * FROM nobel_laureates WHERE year = 2001;
+SELECT * FROM laureates WHERE year = 2002;
+SELECT * FROM laureates WHERE year = 2001;
 ```
 #### b) Let's require two nodes to answer
 ```sql
@@ -251,8 +252,8 @@ nodetool removenode <hash>
 How about now?
 ```sql
 -- Is it operational?
-SELECT * FROM nobel_laureates WHERE year = 2002;
-SELECT * FROM nobel_laureates WHERE year = 2001;
+SELECT * FROM laureates WHERE year = 2002;
+SELECT * FROM laureates WHERE year = 2001;
 ```
 ## Cassandra Demo #2 - Write Path
 This demo explains the steps taken by Cassandra when storing information on a single node.
